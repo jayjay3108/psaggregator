@@ -6,8 +6,10 @@ export async function load() {
             id: true,
             title: true,
             href: true,
+            secondaryHref: true,
             imageUri: true,
-            startDate: true
+            startDate: true,
+            duration: true
         },
         where: {
             type: {

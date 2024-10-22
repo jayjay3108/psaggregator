@@ -1,62 +1,50 @@
 <script lang="ts">
     import type { ScheduledContentPiece } from "@prisma/client";
-    import { Video, VideoPlayer } from "carbon-icons-svelte";
+    import { PlayFilledAlt, Video, VideoPlayer } from "carbon-icons-svelte";
     import moment from "moment";
     import Sparkle from "./Sparkle.svelte";
+    import * as Card from "$lib/components/ui/card";
+    import { Button } from "./ui/button";
 
     export let entry: ScheduledContentPiece;
 </script>
 
-{#if entry.href}
-    <a class="card card-hover flex items-center p-4" href={entry.href} target="_blank">
-        <div class="mr-4 shrink-0">
-            {#if entry.type === "TwitchStream"}
-                <Video size={32} />
-            {:else}
-                <VideoPlayer size={32} />
+<Card.Root>
+    <div class="flex flex-col items-center gap-y-1 p-4 md:flex-row md:gap-x-4" title="Noch nicht veröffentlicht">
+        <div class="flex shrink-0 items-center gap-x-4">
+            <div>
+                {#if entry.type === "TwitchStream"}
+                    <Video size={32} />
+                {:else}
+                    <VideoPlayer size={32} />
+                {/if}
+            </div>
+            {#if entry.startDate}
+                {@const date = moment(entry.startDate)}
+                <div>
+                    {#if !moment().isSame(date, "day")}
+                        <span class="font-bold">{date.format("DD. MMM,")}</span>
+                    {/if}
+                    <span class="font-bold">{date.format("HH:mm")}</span>
+                </div>
             {/if}
         </div>
-        {#if entry.startDate}
-            {@const date = moment(entry.startDate)}
-            <div class="mr-4 shrink-0">
-                {#if !moment().isSame(date, "day")}
-                    <span class="font-bold">{date.format("DD. MMM,")}</span>
-                {/if}
-                <span class="font-bold">{date.format("HH:mm")}</span>
-            </div>
-        {/if}
-        <span class="overflow-x-hidden text-ellipsis whitespace-nowrap" title={entry.title}>{entry.title}</span>
-        {#if entry.importedFrom === "OpenAI"}
+        <span class="overflow-x-hidden text-ellipsis md:whitespace-nowrap" title={entry.title}>{entry.title}</span>
+        {#if entry.href || entry.importedFrom === "OpenAI"}
             <div class="grow" />
-            <div class="shrink-0" title="Diese Ressource wurde von der OpenAI Vision AI importiert">
-                <Sparkle />
-            </div>
         {/if}
-    </a>
-{:else}
-    <div class="card flex items-center p-4" title="Noch nicht veröffentlicht">
-        <div class="mr-4 shrink-0">
-            {#if entry.type === "TwitchStream"}
-                <Video size={32} />
-            {:else}
-                <VideoPlayer size={32} />
-            {/if}
-        </div>
-        {#if entry.startDate}
-            {@const date = moment(entry.startDate)}
-            <div class="mr-4 shrink-0">
-                {#if !moment().isSame(date, "day")}
-                    <span class="font-bold">{date.format("DD. MMM,")}</span>
-                {/if}
-                <span class="font-bold">{date.format("HH:mm")}</span>
-            </div>
+        {#if entry.href}
+            <Button variant="default" href={entry.href} target="_blank">
+                <span class="mr-2">
+                    <PlayFilledAlt />
+                </span>
+                <span>Ansehen</span>
+            </Button>
         {/if}
-        <span class="overflow-x-hidden text-ellipsis whitespace-nowrap" title={entry.title}>{entry.title}</span>
         {#if entry.importedFrom === "OpenAI"}
-            <div class="grow" />
             <div class="shrink-0" title="Diese Ressource wurde von der OpenAI Vision AI importiert">
                 <Sparkle />
             </div>
         {/if}
     </div>
-{/if}
+</Card.Root>
